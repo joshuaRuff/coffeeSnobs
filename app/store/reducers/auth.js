@@ -9,11 +9,27 @@ export default (state = initialState.auth, action) => {
     };
   }
 
-  case 'LOGIN': {
+  case 'LOGIN_SUCCESS': {
     return {
       ...state,
-      params: action.payload.params,
-      url: action.payload.url,
+      error: '',
+      expires: action.payload.expires,
+      token: action.payload.token,
+    };
+  }
+
+  case 'LOGIN_ERROR': {
+    return {
+      ...state,
+      error: action.payload.error,
+    };
+  }
+
+  case 'LOGOUT': {
+    return {
+      ...state,
+      token: '',
+      expires: '',
     };
   }
 

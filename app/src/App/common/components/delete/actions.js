@@ -5,14 +5,14 @@ function testAction(test) {
   };
 }
 
-function forgot(url, params) {
+function deleteTemplate(id) {
   return {
-    type: 'FORGOT',
-    payload: { url, params },
+    type: 'DELETE_TEMPLATE',
+    payload: id,
   };
 }
 
 export default {
   testAction,
-  forgot,
+  deleteTemplate,
 };

@@ -5,14 +5,14 @@ function testAction(test) {
   };
 }
 
-function forgot(url, params) {
+function captureTemplate(params) {
   return {
-    type: 'FORGOT',
-    payload: { url, params },
+    type: 'CAPTURE_TEMPLATE',
+    payload: params,
   };
 }
 
 export default {
   testAction,
-  forgot,
+  captureTemplate,
 };

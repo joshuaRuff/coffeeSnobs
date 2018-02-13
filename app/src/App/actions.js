@@ -1,18 +1,46 @@
-function testAction(test) {
+import { getWithToken } from './common/functions';
+
+function autologin(token, expires) {
   return {
-    type: 'TEST_ACTION',
-    payload: { test },
+    type: 'LOGIN_SUCCESS',
+    payload: { token, expires },
   };
 }
 
-function testAction2(test) {
+function logout() {
+  localStorage.setItem('token', '');
+  localStorage.setItem('tokenExpires', '');
   return {
-    type: 'TEST_ACTION2',
-    payload: { test },
+    type: 'LOGOUT',
+    payload: {},
+  };
+}
+
+function getTemplates() {
+  return async(dispatch, getState) => {
+    try {
+      const data = await getWithToken('template?idOnly=false', getState());
+      dispatch({ type: 'GET_TEMPLATES_SUCCESS', payload: data });
+    } catch (e) {
+      dispatch({ type: 'GET_TEMPLATES_ERROR', payload: e });
+    }
+  };
+}
+
+function getLayouts() {
+  return async(dispatch, getState) => {
+    try {
+      const data = await getWithToken('layout?idOnly=false', getState());
+      dispatch({ type: 'GET_LAYOUTS_SUCCESS', payload: data });
+    } catch (e) {
+      dispatch({ type: 'GET_LAYOUTS_ERROR', payload: e });
+    }
   };
 }
 
 export default {
-  testAction,
-  testAction2,
+  autologin,
+  getTemplates,
+  getLayouts,
+  logout,
 };

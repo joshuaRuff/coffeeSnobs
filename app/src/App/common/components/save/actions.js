@@ -5,14 +5,14 @@ function testAction(test) {
   };
 }
 
-function forgot(url, params) {
+function updateTemplate(template) {
   return {
-    type: 'FORGOT',
-    payload: { url, params },
+    type: 'UPDATE_TEMPLATE',
+    payload: { template },
   };
 }
 
 export default {
   testAction,
-  forgot,
+  updateTemplate,
 };

@@ -5,14 +5,14 @@ function testAction(test) {
   };
 }
 
-function forgot(url, params) {
+function selectAccount(accountId) {
   return {
-    type: 'FORGOT',
-    payload: { url, params },
+    type: 'SELECT_ACCOUNT',
+    payload: { accountId },
   };
 }
 
 export default {
   testAction,
-  forgot,
+  selectAccount,
 };

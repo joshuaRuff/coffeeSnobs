@@ -1,18 +1,18 @@
 function testAction(test) {
   return {
-    type: 'TEST_ACTION',
+    type: 'TEST_ACTION_LOGIN',
     payload: { test },
   };
 }
 
-function testAction2(test) {
+function forgot(url, params) {
   return {
-    type: 'TEST_ACTION2',
-    payload: { test },
+    type: 'FORGOT',
+    payload: { url, params },
   };
 }
 
 export default {
   testAction,
-  testAction2,
+  forgot,
 };

@@ -4,8 +4,9 @@
   "description": "Pages Template Editor",
   "main": "executor.js",
   "scripts": {
-    "react-local": "./node_modules/.bin/webpack-dev-server --port 3000 --inline --hot",
-    "react-compile": "webpack -p --progress --colors --display-modules --sort-modules-by"
+    "dev": "./node_modules/.bin/webpack-dev-server --port 3000 --inline --hot",
+    "compile-prod": "webpack -p --progress --colors --display-modules --sort-modules-by",
+    "compile-dev": "webpack --progress --colors --display-modules --sort-modules-by"
   },
   "license": "MIT",
   "devDependencies": {
@@ -31,15 +32,19 @@
   },
   "dependencies": {
     "axios": "^0.17.1",
+    "codemirror": "^5.34.0",
     "history": "^4.7.2",
+    "lodash": "^4.17.4",
     "material-ui": "^0.20.0",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
+    "react-codemirror": "^1.0.0",
     "react-dom": "^16.2.0",
     "react-redux": "^5.0.6",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-router-redux": "^5.0.0-alpha.9",
-    "redux": "^3.7.2"
+    "redux": "^3.7.2",
+    "redux-thunk": "^2.2.0"
   }
 }

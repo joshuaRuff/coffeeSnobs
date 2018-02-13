@@ -2,7 +2,7 @@ import React from 'react';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
-import Nav from './nav';
+import Nav from './common/components/nav';
 import Routes from './router';
 
 export default class Login extends React.Component {

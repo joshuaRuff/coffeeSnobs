@@ -1,33 +1,19 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 
-import FourOFour from '../common/components/404';
+import Template from './Template';
+import Layout from './Layout';
 
-class Account extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>Account</h1>
-      </div>
-    );
-  }
-}
-
-class Edit extends React.Component {
-  render() {
-    return (
-      <div>
-        <h1>Edit</h1>
-      </div>
-    );
-  }
-}
-
+const defaultView = props => <div><p>Please selected a template or layout to get started</p></div>;
 
 export default () => (
   <Switch>
-    <Route path="/account" component={Account} />
-    <Route path="/edit" component={Edit} />
-    <Route component={FourOFour} />
+    <Route exact path="/template/:templateId/:action" component={Template} />
+    <Route exact path="/template/:templateId" component={Template} />
+    <Route exact path="/template" component={Template} />
+    <Route exact path="/layout/:layoutId/:action" component={Layout} />
+    <Route exact path="/layout/:layoutId" component={Layout} />
+    <Route exact path="/layout" component={Layout} />
+    <Route component={defaultView} />
   </Switch>
 );

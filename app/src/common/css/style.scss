@@ -3,3 +3,17 @@
 p {
   margin-top: 25px;
 }
+
+.active {
+  background-color: rgb(0, 188, 212) !important;
+}
+
+.navLeft {
+  .column-head.active{
+    background-color: #DCDCDC !important;
+  }
+}
+
+.fullPage .CodeMirror {
+  height: 600px;
+}
