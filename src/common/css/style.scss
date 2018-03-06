@@ -1,0 +1,27 @@
+// App wide styles
+
+body, h1, h2, h3, h4, h5, .ui  {
+  font-family: 'Roboto', 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
+}
+
+body{
+  background-color: #f2f2f2;
+}
+
+p {
+  margin-top: 25px;
+}
+
+.active {
+  background-color: rgb(0, 188, 212) !important;
+}
+
+.navLeft {
+  .column-head.active{
+    background-color: #DCDCDC !important;
+  }
+}
+
+.fullPage .CodeMirror {
+  height: 600px;
+}

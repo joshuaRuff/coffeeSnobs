@@ -1,7 +1,8 @@
 const webpack = require('webpack');
+const path = require('path');
 
 module.exports = {
-  entry: './app/client.js',
+  entry: './src/client.js',
   devServer: {
     historyApiFallback: true,
   },
@@ -11,12 +12,16 @@ module.exports = {
       { test: /\.json$/, loader: 'json' },
       { test: /\.scss$/, loaders: ['style-loader', 'css-loader', 'sass-loader'] },
       { test: /\.css$/, loaders: ['style-loader', 'css-loader'] },
+      { test: /\.less$/, loaders: ['style-loader', 'css-loader', 'less-loader'] },
+      { test: /\.(jpe?g|png|woff|woff2|eot|ttf|svg)(\?[a-z0-9=.]+)?$/, loader: 'url-loader?limit=100000' },
     ],
   },
   output: {
     path: __dirname,
     filename: './client.min.js',
   },
-  resolve: {},
+  resolve: {
+    modules: [path.resolve('./src'), path.resolve('./node_modules')],
+  },
   plugins: [],
 };
