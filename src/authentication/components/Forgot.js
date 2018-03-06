@@ -1,5 +1,4 @@
 import React from 'react';
-import { Button, Input } from 'semantic-ui-react';
 
 export default class Forgot extends React.Component {
   constructor(props) {

@@ -1,5 +1,5 @@
 import { Route, Switch } from 'react-router-dom';
-import { Header } from 'semantic-ui-react';
+import { Row, Col } from 'antd';
 
 import React from 'react';
 import Login from './Login';
@@ -21,13 +21,15 @@ export class index extends React.Component {
   }
   render() {
     return (
-      <div>
-        <Header as="h3">Authentication</Header>
-        <Switch>
-          <Route path="/auth/login" component={Login} />
-          <Route path="/auth/forgot" component={Forgot} />
-        </Switch>
-      </div>
+      <Row type="flex" justify="center" align="middle" style={{ height: '100vh' }}>
+        <Col xs={{ span: 11 }} lg={{ span: 6 }}>
+          <h1>Authentication</h1>
+          <Switch>
+            <Route path="/auth/login" component={Login} />
+            <Route path="/auth/forgot" component={Forgot} />
+          </Switch>
+        </Col>
+      </Row>
     );
   }
 }

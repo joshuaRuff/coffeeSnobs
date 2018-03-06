@@ -9,7 +9,6 @@ import App from './app';
 import Auth from './authentication';
 import store from './store';
 
-import 'semantic-ui-css/semantic.min.css';
 import 'common/css/style.scss';
 
 const history = createHistory();
