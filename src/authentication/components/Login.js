@@ -2,13 +2,11 @@ import React from 'react';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 
 import './Login.scss';
-// import { users } from 'common/api';
-
-// import { getToken } from '../functions';
-//
+import authenicationLogic from '../logic';
 
 const FormItem = Form.Item;
 
+@authenicationLogic
 class NormalLoginForm extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
@@ -20,6 +18,8 @@ class NormalLoginForm extends React.Component {
   };
   render() {
     const { getFieldDecorator } = this.props.form;
+    const { isSubmitting } = this.props;
+    const { submit } = this.actions;
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
         <FormItem>
@@ -34,7 +34,7 @@ class NormalLoginForm extends React.Component {
             prefix={<Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />}
             type="password"
             placeholder="Password"
-             />)}
+          />)}
         </FormItem>
         <FormItem>
           {getFieldDecorator('remember', {
@@ -44,8 +44,8 @@ class NormalLoginForm extends React.Component {
           <a className="login-form-forgot" href="/auth/forgot">
             Forgot password
           </a>
-          <Button type="primary" htmlType="submit" className="login-form-button">
-            Log in
+          <Button type="primary" htmlType="submit" className="login-form-button" disabled={isSubmitting} onClick={submit}>
+            Log in {isSubmitting ? 'Submitting...' : 'Submit!'}
           </Button>
           Or <a href="">register now!</a>
         </FormItem>

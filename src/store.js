@@ -1,26 +1,14 @@
-import { createStore, compose, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
 import { browserHistory } from 'react-router';
-import { routerMiddleware } from 'react-router-redux';
+import { routerReducer, routerMiddleware } from 'react-router-redux';
+import sagaPlugin from 'kea-saga';
 
-import RootReducer from './rootReducer';
+// store.js
+import { getStore } from 'kea';
 
-// Create store
-let store;
-if (process.env.NODE_ENV === 'production') {
-  store = createStore(RootReducer, undefined, compose(applyMiddleware(routerMiddleware(browserHistory), thunk)));
-} else {
-  /* eslint-disable no-underscore-dangle */
-  store = createStore(
-    RootReducer,
-    undefined,
-    compose(
-      applyMiddleware(routerMiddleware(browserHistory), thunk),
-      window.devToolsExtension ? window.devToolsExtension() : f => f,
-    ),
-  );
-  /* eslint-enable */
-}
-
-const storeExport = store;
-export default storeExport;
+export default getStore({
+  plugins: [sagaPlugin],
+  middleware: [routerMiddleware(browserHistory)],
+  reducers: {
+    router: routerReducer,
+  },
+});
