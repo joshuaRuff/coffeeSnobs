@@ -2,9 +2,9 @@ import { Route, Switch } from 'react-router-dom';
 import { Row, Col } from 'antd';
 
 import React from 'react';
-import Login from './Login';
-import Forgot from './Forgot';
-import Register from './Register';
+import Login from './components/login';
+import Forgot from './components/forgot';
+import Register from './components/register';
 
 export { Login, Forgot, Register };
 

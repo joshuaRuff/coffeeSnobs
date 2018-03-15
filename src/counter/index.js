@@ -1,31 +1,78 @@
-// counter/index.js
-import React, { Component } from 'react';
-import { Button, Icon } from 'antd';
-import counterLogic from './logic';
+import React from 'react';
+import { Layout, Menu, Icon, Row, Col, Card } from 'antd';
+import Counter from './components/counter';
+import CounterDisplay from './components/counterDisplay';
 
-@counterLogic
-export default class Counter extends Component {
+import './index.scss';
+
+const { Header, Sider, Content } = Layout;
+
+
+export default class AppLayout extends React.Component {
+
+  constructor() {
+    super();
+    this.state = {
+      collapsed: false,
+    };
+  }
+
+  toggle = () => {
+    this.setState({
+      collapsed: !this.state.collapsed,
+    });
+  };
+
   render() {
-    const { counter, doubleCounter } = this.props;
-    const { increment, decrement } = this.actions;
-    const size = 'medium';
-
     return (
-      <div className="kea-counter" style={{ margin: '20px 0' }}>
-        Count: {counter}
-        <br />
-        Doublecount: {doubleCounter}
-        <br />
-        <Button.Group size={size}>
-          <Button type="primary" onClick={() => decrement(1)}>
-            <Icon type="minus" />Decrement
-          </Button>
-          <Button type="primary" onClick={() => increment(1)}>
-            Increment<Icon type="plus" />
-          </Button>
-        </Button.Group>
-        <br />
-      </div>
+      <Layout id="AppLayout">
+        <Sider trigger={null} collapsible collapsed={this.state.collapsed}>
+          <div className="logo" />
+          <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+            <Menu.Item key="1">
+              <Icon type="user" />
+              <span>nav 1</span>
+            </Menu.Item>
+            <Menu.Item key="2">
+              <Icon type="video-camera" />
+              <span>nav 2</span>
+            </Menu.Item>
+            <Menu.Item key="3">
+              <Icon type="upload" />
+              <span>nav 3</span>
+            </Menu.Item>
+          </Menu>
+        </Sider>
+        <Layout>
+          <Header style={{ background: '#fff', padding: 0 }}>
+            <Icon className="trigger" type={this.state.collapsed ? 'menu-unfold' : 'menu-fold'} onClick={this.toggle} />
+          </Header>
+          <Content
+            style={{
+              margin: '24px 16px',
+              padding: 24,
+              background: '#fff',
+              minHeight: 280,
+            }}
+          >
+            <Row gutter={16}>
+              <Col span={8}>
+                <Card title="Counter One">
+                  <Counter id={1} />
+                  <Counter id={1} />
+                  <CounterDisplay id={1} />
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card title="Counter Two">
+                  <h2>Counter 2 using the same component code with dynamic key</h2>
+                  <Counter id={2} />
+                </Card>
+              </Col>
+            </Row>
+          </Content>
+        </Layout>
+      </Layout>
     );
   }
 }
