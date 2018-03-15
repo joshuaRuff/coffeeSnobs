@@ -5,11 +5,16 @@ import { Route, Switch } from 'react-router-dom';
 import { ConnectedRouter } from 'react-router-redux';
 import createHistory from 'history/createBrowserHistory';
 
-import App from './app';
-import Auth from './authentication';
+// Global Styles
+import './common/css/style.scss';
+
+// Store it required to be imported before any components
+// including the main app
 import store from './store';
 
-import 'common/css/style.scss';
+// Include Component
+import App from './app';
+import Auth from './authentication';
 
 const history = createHistory();
 

@@ -13,7 +13,7 @@ export default kea({
     login: true,
     submit: true,
     submitSuccess: true,
-    submitFailure: true
+    submitFailure: true,
   }),
 
   reducers: ({ actions }) => ({
@@ -33,6 +33,15 @@ export default kea({
         },
       },
     ],
+    isSubmitting: [
+      false,
+      PropTypes.bool,
+      {
+        [actions.submit]: () => true,
+        [actions.submitSuccess]: () => false,
+        [actions.submitFailure]: () => false,
+      },
+    ],
   }),
 
   // SELECTORS (data from reducer + more)
@@ -45,23 +54,24 @@ export default kea({
   // Actions dispatched before this lifecycle method will not be
   // seen by takeLatest.
   takeLatest: ({ actions, workers }) => ({
-    [actions.login]: function * () {
-      const { submitSuccess, submitFailure } = this.actions
+    [actions.login]: function* () {
+      const { submitSuccess, submitFailure } = this.actions;
 
       // get the form data...
-      const values = yield this.get('values')
-      console.log('Submitting form with values:', values)
+      const values = yield this.get('values');
+      console.log('Submitting form with values:', values);
 
       // simulate a 1sec async request.
-      yield delay(1000)
+      yield delay(1000);
 
-      if (true) { // if the request was successful
-        window.alert('Success')
-        yield put(submitSuccess())
+      if (true) {
+        // if the request was successful
+        window.alert('Success');
+        yield put(submitSuccess());
       } else {
-        window.alert('Error')
-        yield put(submitFailure())
+        window.alert('Error');
+        yield put(submitFailure());
       }
-    }
-  })
+    },
+  }),
 });

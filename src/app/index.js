@@ -1,5 +1,7 @@
 import React from 'react';
-import { Layout, Menu, Icon } from 'antd';
+import { Layout, Menu, Icon, Row, Col, Card } from 'antd';
+import Counter from 'counter';
+import CounterDisplay from 'CounterDisplay';
 
 const { Header, Sider, Content } = Layout;
 
@@ -46,7 +48,21 @@ export default class AppLayout extends React.Component {
               minHeight: 280,
             }}
           >
-            Content
+            <Row gutter={16}>
+              <Col span={8}>
+                <Card title="Counter One">
+                  <Counter id={1} />
+                  <Counter id={1} />
+                  <CounterDisplay id={1} />
+                </Card>
+              </Col>
+              <Col span={8}>
+                <Card title="Counter Two">
+                  <h2>Counter 2 using the same component code with dynamic key</h2>
+                  <Counter id={2} />
+                </Card>
+              </Col>
+            </Row>
           </Content>
         </Layout>
       </Layout>
