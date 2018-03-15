@@ -9,6 +9,7 @@ export default class Counter extends Component {
     const { counter, doubleCounter } = this.props;
     const { increment, decrement } = this.actions;
     const size = 'medium';
+
     return (
       <div className="kea-counter" style={{ margin: '20px 0' }}>
         Count: {counter}
