@@ -5,7 +5,7 @@ import counterLogic from '../counter/logic';
 
 // @counterLogic
 @connect({
-  props: [counterLogic, ['counter', 'doubleCounter']],
+  props: [counterLogic.withKey(props => props.id), ['counter', 'doubleCounter']],
 })
 export default class DisplayCounter extends Component {
   render() {
