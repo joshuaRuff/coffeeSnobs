@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 export default kea({
   // Location in Redux tree
   key: props => props.id,
-  path: key => ['scenes', key],
+  path: key => ['app', key],
 
   // Simplified Actions
   actions: () => ({
@@ -12,9 +12,9 @@ export default kea({
   }),
 
   // Reducer Logic
-  reducers: ({ actions, key, props }) => ({
+  reducers: ({ actions }) => ({
     collapsed: [false, PropTypes.bool, {
-      [actions.toggle]: (state, payload) => !state,
+      [actions.toggle]: state => !state,
     }],
   }),
 });

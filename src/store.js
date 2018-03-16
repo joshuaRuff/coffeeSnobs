@@ -7,6 +7,7 @@ import { getStore } from 'kea';
 
 export default getStore({
   plugins: [sagaPlugin],
+  paths: ['app'],
   middleware: [routerMiddleware(browserHistory)],
   reducers: {
     router: routerReducer,

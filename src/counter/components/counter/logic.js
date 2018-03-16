@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 export default kea({
   // Location in Redux tree
   key: props => props.id,
-  path: key => ['scenes', 'counterDynamic', 'counter', key],
+  path: key => ['app', 'counterDynamic', 'counter', key],
 
   // Simplified Actions
   actions: () => ({
