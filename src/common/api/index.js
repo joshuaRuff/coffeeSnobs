@@ -1,3 +1,3 @@
-import * as users from './api-users';
+import users from './users';
 
 export default { users };

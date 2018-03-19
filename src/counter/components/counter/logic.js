@@ -24,8 +24,11 @@ export default kea({
     ],
   }),
 
-  // Slectors used to only recompute when their input changes
+  // Selectors used to only recompute when their input changes
   selectors: ({ selectors }) => ({
-    doubleCounter: [() => [selectors.counter], counter => counter * 2, PropTypes.number],
+    doubleCounter: [
+      () => [selectors.counter],
+      counter => counter * 2
+    ],
   }),
 });

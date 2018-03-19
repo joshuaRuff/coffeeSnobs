@@ -1,19 +1,18 @@
 import { kea } from 'kea';
+import { put } from 'redux-saga/effects';
 import PropTypes from 'prop-types';
-// import { routeSelector } from '/store.js';
+import api from 'common/api';
 
 export default kea({
-  path: () => ['auth', 'user'],
+  path: () => ['app', 'auth', 'user'],
 
-  actions: ({ constants }) => ({
-    loginSuccess: value => ({ value }),
-    loginError: value => ({ value }),
+  actions: () => ({
+    loginSuccess: data => ({ data }),
+    loginError: error => ({ error }),
     forgot: value => ({ value }),
     register: value => ({ value }),
-    login: true,
-    submit: true,
-    submitSuccess: true,
-    submitFailure: true,
+    login: (username, password) => ({ username, password }),
+    submitFailure: error => ({ error }),
   }),
 
   reducers: ({ actions }) => ({
@@ -23,12 +22,22 @@ export default kea({
       { persist: true },
       {
         [actions.loginSuccess]: (state, payload) => {
-          const { expires, token } = payload;
+          const { expires, token } = payload.data;
+
           return {
             ...state,
             error: '',
-            expires: expires,
-            token: token,
+            expires,
+            token,
+          };
+        },
+
+        [actions.loginError]: (state, payload) => {
+          const { error } = payload;
+
+          return {
+            ...state,
+            error,
           };
         },
       },
@@ -37,15 +46,15 @@ export default kea({
       false,
       PropTypes.bool,
       {
-        [actions.submit]: () => true,
-        [actions.submitSuccess]: () => false,
-        [actions.submitFailure]: () => false,
+        [actions.login]: () => true,
+        [actions.loginSuccess]: () => false,
+        [actions.loginError]: () => false,
       },
     ],
   }),
 
   // SELECTORS (data from reducer + more)
-  selectors: ({ constants, selectors }) => ({}),
+  // selectors: ({ constants, selectors }) => ({}),
 
   // Sagas: takeLatest
   // Run the following workers every time the action is dispatched,
@@ -53,25 +62,24 @@ export default kea({
   // started before your wrapped component's componentDidMount.
   // Actions dispatched before this lifecycle method will not be
   // seen by takeLatest.
+
   takeLatest: ({ actions, workers }) => ({
-    [actions.login]: function* () {
-      const { submitSuccess, submitFailure } = this.actions;
+    [actions.login]: workers.loginSubmit,
+  }),
 
-      // get the form data...
-      const values = yield this.get('values');
-      console.log('Submitting form with values:', values);
+  workers: {
+    * loginSubmit(action) {
+      const { loginSuccess, loginError } = this.actions;
+      const { username, password } = action.payload;
 
-      // simulate a 1sec async request.
-      yield delay(1000);
-
-      if (true) {
-        // if the request was successful
-        window.alert('Success');
-        yield put(submitSuccess());
-      } else {
-        window.alert('Error');
-        yield put(submitFailure());
+      try {
+        const response = yield api.users.login('-uniqueAccountId_1', username, password);
+        yield put(loginSuccess(response.data));
+      } catch (err) {
+        const error = err.response.data.message || err;
+        yield put(loginError(error));
       }
     },
-  }),
+  },
+
 });

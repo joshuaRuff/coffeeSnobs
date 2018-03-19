@@ -6,18 +6,10 @@ import Login from './components/login';
 import Forgot from './components/forgot';
 import Register from './components/register';
 
-export { Login, Forgot, Register };
-
-export class index extends React.Component {
+export default class Auth extends React.Component {
   constructor(props) {
-    console.log('Auth Component');
     super(props);
-    this.state = {
-      error: '',
-      loading: false,
-      password: '',
-      username: '',
-    };
+    this.state = {};
   }
   render() {
     return (
@@ -25,8 +17,10 @@ export class index extends React.Component {
         <Col xs={{ span: 11 }} lg={{ span: 6 }}>
           <h1>Authentication</h1>
           <Switch>
-            <Route path="/auth/login" component={Login} />
-            <Route path="/auth/forgot" component={Forgot} />
+            <Route exact path="/auth/login" component={Login} />
+            <Route exact path="/auth/forgot" component={Forgot} />
+            <Route exact path="/auth/register" component={Register} />
+            <Route component={Login} />
           </Switch>
         </Col>
       </Row>

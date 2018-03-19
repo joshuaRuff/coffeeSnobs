@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Icon, Input, Button, Checkbox } from 'antd';
 
-import './Login.scss';
+import './login.scss';
 import authenicationLogic from '../logic';
 
 const FormItem = Form.Item;
@@ -10,16 +10,21 @@ const FormItem = Form.Item;
 class NormalLoginForm extends React.Component {
   handleSubmit = (e) => {
     e.preventDefault();
+
     this.props.form.validateFields((err, values) => {
       if (!err) {
-        console.log('Received values of form: ', values);
+        // If form passed validation check, perform custom form actions here
+        const { login } = this.actions;
+        login(values.userName, values.password);
       }
     });
   };
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const { isSubmitting } = this.props;
-    const { submit } = this.actions;
+    const { error } = this.props.login;
+
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
         <FormItem>
@@ -44,11 +49,12 @@ class NormalLoginForm extends React.Component {
           <a className="login-form-forgot" href="/auth/forgot">
             Forgot password
           </a>
-          <Button type="primary" htmlType="submit" className="login-form-button" disabled={isSubmitting} onClick={submit}>
+          <Button type="primary" htmlType="submit" className="login-form-button" disabled={isSubmitting}>
             Log in {isSubmitting ? 'Submitting...' : 'Submit!'}
           </Button>
           Or <a href="">register now!</a>
         </FormItem>
+        {error}
       </Form>
     );
   }
