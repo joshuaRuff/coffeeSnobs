@@ -1,5 +1,5 @@
 import React from 'react';
-import { Form, Icon, Input, Button, Checkbox } from 'antd';
+import { Alert, Button, Checkbox, Form, Icon, Input } from 'antd';
 
 import './login.scss';
 import authenicationLogic from '../logic';
@@ -8,6 +8,7 @@ const FormItem = Form.Item;
 
 @authenicationLogic
 class NormalLoginForm extends React.Component {
+
   handleSubmit = (e) => {
     e.preventDefault();
 
@@ -23,10 +24,20 @@ class NormalLoginForm extends React.Component {
   render() {
     const { getFieldDecorator } = this.props.form;
     const { isSubmitting } = this.props;
-    const { error } = this.props.login;
+    const { error, errorMessage } = this.props.error;
+
+    const errorAlert = (error) ?
+      (<Alert
+        message={errorMessage}
+        type="error"
+        closable
+      />) : null;
 
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
+        <FormItem>
+          {errorAlert}
+        </FormItem>
         <FormItem>
           {getFieldDecorator('userName', {
             rules: [{ required: true, message: 'Please input your username!' }],
@@ -54,10 +65,10 @@ class NormalLoginForm extends React.Component {
           </Button>
           Or <a href="">register now!</a>
         </FormItem>
-        {error}
       </Form>
     );
   }
+
 }
 
 const WrappedNormalLoginForm = Form.create()(NormalLoginForm);

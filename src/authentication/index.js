@@ -7,10 +7,12 @@ import Forgot from './components/forgot';
 import Register from './components/register';
 
 export default class Auth extends React.Component {
+
   constructor(props) {
     super(props);
     this.state = {};
   }
+
   render() {
     return (
       <Row type="flex" justify="center" align="middle" style={{ height: '100vh' }}>
@@ -26,4 +28,5 @@ export default class Auth extends React.Component {
       </Row>
     );
   }
+
 }

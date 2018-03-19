@@ -3,5 +3,8 @@
     "settings": {
       'import/resolver': 'webpack',
     },
-    "rules": {},
+    "rules": {
+        "padded-blocks": ["error", { "classes": "always" } ],
+        "no-trailing-spaces": 0
+      },
 }

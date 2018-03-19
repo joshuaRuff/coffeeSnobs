@@ -14,20 +14,21 @@ import config from './config';
 //   this.props.register(url, { email,password});
 // }
 
+const forgot = (accountId, username) => {
+
+  const url = `${config.apiUrl}/user/${accountId}/forgot?apikey=${config.apikey}`;
+  return axios.post(url, { username });
+
+};
+
 const login = (accountId, username, password) => {
+
   const url = `${config.apiUrl}/user/${accountId}/login?apikey=${config.apikey}`;
-  return axios
-    .post(url, { username, password });
-  // .then((response) => {
-  //   // const { token, expires } = response.data;
-  //   // localStorage.setItem('token', token);
-  //   // localStorage.setItem('tokenExpires', expires);
-  // })
-  // .catch((e) => {
-  //   // const error = e.response.data.message || e;
-  // });
+  return axios.post(url, { username, password });
+
 };
 
 export default {
+  forgot,
   login,
 };
