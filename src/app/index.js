@@ -10,6 +10,7 @@ const { Content } = Layout;
 
 
 export default class AppLayout extends React.Component {
+
   constructor() {
     super();
     this.state = {};
@@ -20,7 +21,7 @@ export default class AppLayout extends React.Component {
       <Layout id="AppLayout">
         <SideNav id="mainSideNav" />
         <Layout>
-          <TopNav id="mainSideNav" />
+          <TopNav />
           <Content
             style={{
               margin: '24px 16px',
@@ -46,4 +47,5 @@ export default class AppLayout extends React.Component {
       </Layout>
     );
   }
+
 }

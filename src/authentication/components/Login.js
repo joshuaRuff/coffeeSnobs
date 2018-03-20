@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'kea';
+import { Link } from 'react-router-dom';
 import { Alert, Button, Checkbox, Form, Icon, Input } from 'antd';
 
 import './login.scss';
@@ -6,17 +8,56 @@ import authenicationLogic from '../logic';
 
 const FormItem = Form.Item;
 
-@authenicationLogic
 class NormalLoginForm extends React.Component {
+
+  componentWillMount() {
+    // Check if token exists, if it does and is not expired, login user in.
+    const token = this.getToken();
+    if (token) {
+      this.actions.setLogin(token.token, token.expires);
+      this.props.history.push('/');
+    }
+  }
+
+  componentWillReceiveProps(nextProps) {
+    // Once action goes through and it succesfully got a token, change route to app
+    if (nextProps.login.token) {
+      this.props.history.push('/');
+    }
+  }
+
+  getToken = () => {
+    // Check localstorage if a token exists
+    const { token, expires } = localStorage;
+
+    if (token && expires && this.checkTime(expires)) {
+      // If token hasn't expired, return it
+      return { token, expires };
+    }
+    return false;
+  }
+
+  checkTime = (dateString) => {
+    if (dateString) {
+      try {
+        const now = Date.now();
+        const expires = new Date(dateString).getTime();
+        if (now < expires) { return true; }
+      } catch (err) {
+        return false;
+      }
+    }
+    return false;
+  }
 
   handleSubmit = (e) => {
     e.preventDefault();
 
-    this.props.form.validateFields((err, values) => {
+    this.props.form.validateFields((err, form) => {
       if (!err) {
         // If form passed validation check, perform custom form actions here
         const { login } = this.actions;
-        login(values.userName, values.password);
+        login(form.userName, form.password, form.remember);
       }
     });
   };
@@ -57,13 +98,13 @@ class NormalLoginForm extends React.Component {
             valuePropName: 'checked',
             initialValue: true,
           })(<Checkbox>Remember me</Checkbox>)}
-          <a className="login-form-forgot" href="/auth/forgot">
+          <Link className="login-form-forgot" to="/auth/forgot">
             Forgot password
-          </a>
+          </Link>
           <Button type="primary" htmlType="submit" className="login-form-button" disabled={isSubmitting}>
             Log in {isSubmitting ? 'Submitting...' : 'Submit!'}
           </Button>
-          Or <a href="">register now!</a>
+          Or <Link to="/register">register now!</Link>
         </FormItem>
       </Form>
     );
@@ -71,79 +112,13 @@ class NormalLoginForm extends React.Component {
 
 }
 
-const WrappedNormalLoginForm = Form.create()(NormalLoginForm);
+const keaLogic = {
+  props: [authenicationLogic, ['isSubmitting', 'error', 'login']],
+  actions: [authenicationLogic, ['setLogin', 'login']],
+};
+
+// Important to connect kea to the component before we pass it onto antd.
+// Antd doesn't forward everything, like this.actions to the component
+const WrappedNormalLoginForm = Form.create()(connect(keaLogic)(NormalLoginForm));
 
 export default WrappedNormalLoginForm;
-
-// export default class Login extends React.Component {
-//   constructor(props) {
-//     console.log('Login Component');
-//     super(props);
-//     this.state = {
-//       error: '',
-//       loading: false,
-//       password: '',
-//       username: '',
-//     };
-//   }
-//
-//   render() {
-//     return <h1>Login Route</h1>;
-//   }
-
-// componentWillMount() {
-//   // Check if token exists, if it does and is not expired, login user in.
-//   const token = getToken();
-//   if (token) {
-//     this.props.autologin(token.sessionToken, token.sessionExpires);
-//     this.props.history.push('/');
-//   }
-// }
-
-// componentWillReceiveProps(nextProps) {
-//   // Once action goes through and it succesfully got a token, change route to app
-//   this.setState({ loading: false });
-//   if (nextProps.error) {
-//     this.setState({ error: this.props.error });
-//   }
-//   if (nextProps.token) {
-//     this.props.history.push('/');
-//   }
-// }
-
-// login(event) {
-//   const url = `${this.props.apiUrl}/user/${this.props.accountId}/login`;
-//   const payload = {
-//     username: this.state.username,
-//     password: this.state.password,
-//   };
-//   this.setState({ loading: true });
-//   this.props.login(url, payload);
-// }
-
-// render() {
-//   const loading = this.state.loading ? <CircularProgress size={80} thickness={5} /> : '';
-//   const error = this.props.error || '';
-//   return (
-//     <div>
-//       <AppBar title="Login" />
-//       <TextField
-//         hintText="Enter your Username"
-//         floatingLabelText="Username"
-//         onChange={(event, newValue) => this.setState({ username: newValue })}
-//       />
-//       <br />
-//       <TextField
-//         type="password"
-//         hintText="Enter your Password"
-//         floatingLabelText="Password"
-//         onChange={(event, newValue) => this.setState({ password: newValue })}
-//       />
-//       <br />
-//       <RaisedButton label="Submit" primary disabled={this.state.loading} onClick={event => this.login(event)} />
-//       {loading}
-//       {error}
-//     </div>
-//   );
-// }
-// }

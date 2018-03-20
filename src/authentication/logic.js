@@ -3,54 +3,25 @@ import { put } from 'redux-saga/effects';
 import PropTypes from 'prop-types';
 import api from 'common/api';
 
-const reducer = {
-
-  forgotError: (state, payload) => ({
-    ...state,
-    error: true,
-    errorMessage: payload,
-  }),
-
-  forgotSuccess: (state, payload) => ({
-    ...state,
-    message: payload,
-  }),
-
-  loginSuccess: (state, payload) => {
-    const { expires, token } = payload.data;
-
-    return {
-      ...state,
-      expires,
-      token,
-    };
-  },
-
-  loginError: (state, payload) => {
-    const { error } = payload;
-
-    return {
-      ...state,
-      error: true,
-      errorMessage: error,
-    };
-  },
-};
-
 export default kea({
 
   path: () => ['app', 'auth', 'user'],
 
   actions: () => ({
     forgot: username => username,
+    setForgot: message => message,
     forgotError: error => error,
     forgotSuccess: data => data,
-    login: (username, password) => ({ username, password }),
-    loginSuccess: data => ({ data }),
+    login: (username, password, remember) => ({ username, password, remember }),
+    setLogin: (token, expires) => ({ token, expires }),
+    setError: (error, errorMessage) => ({ error, errorMessage }),
+    loginSuccess: data => data,
     loginError: error => ({ error }),
+    logout: () => true,
     register: value => ({ value }),
     reset: username => ({ username }),
     submitFailure: error => ({ error }),
+    setIsSubmitting: value => ({ value }),
   }),
 
   reducers: ({ actions }) => (
@@ -59,12 +30,7 @@ export default kea({
         false,
         PropTypes.bool,
         {
-          [actions.forgot]: () => true,
-          [actions.forgotError]: () => false,
-          [actions.forgotSuccess]: () => false,
-          [actions.login]: () => true,
-          [actions.loginSuccess]: () => false,
-          [actions.loginError]: () => false,
+          [actions.setIsSubmitting]: (state, payload) => payload.value,
         },
       ],
 
@@ -72,10 +38,11 @@ export default kea({
         {},
         PropTypes.object,
         {
-          [actions.forgot]: () => ({ error: false, errorMessage: '' }),
-          [actions.forgotError]: reducer.forgotError,
-          [actions.login]: () => ({ error: false, errorMessage: '' }),
-          [actions.loginError]: reducer.loginError,
+          [actions.setError]: (state, payload) => ({
+            ...state,
+            error: payload.error,
+            errorMessage: payload.errorMessage,
+          }),
         },
       ],
 
@@ -84,7 +51,11 @@ export default kea({
         PropTypes.object,
         { persist: true },
         {
-          [actions.loginError]: reducer.loginError,
+          [actions.setLogin]: (state, payload) => ({
+            ...state,
+            expires: payload.expires,
+            token: payload.token,
+          }),
         },
       ],
 
@@ -92,7 +63,10 @@ export default kea({
         {},
         PropTypes.object,
         {
-          [actions.forgotSuccess]: reducer.forgotSuccess,
+          [actions.setForgot]: (state, payload) => ({
+            ...state,
+            message: payload,
+          }),
         },
       ],
     }
@@ -101,41 +75,78 @@ export default kea({
   // SELECTORS (data from reducer + more)
   // selectors: ({ constants, selectors }) => ({}),
 
-  // Sagas:
+  // --- Sagas --- \\
 
   takeLatest: ({ actions, workers }) => ({
     [actions.login]: workers.loginSubmit,
     [actions.forgot]: workers.forgotSubmit,
+    [actions.logout]: workers.logout,
   }),
 
   workers: {
     * loginSubmit(action) {
-      const { loginSuccess, loginError } = this.actions;
-      const { username, password } = action.payload;
+      const { setIsSubmitting, setLogin, setError } = this.actions;
+      const { username, password, remember } = action.payload;
 
       try {
-        const response = yield api.users.login('-uniqueAccountId_1', username, password);
-        yield put(loginSuccess(response.data));
+        // Restore store to defaults
+        yield put(setIsSubmitting(true));
+        yield put(setError(false, ''));
+
+        // Do call to our api users endpoint
+        const response = yield api.users.login('-uniqueAccountId_1', username, password, remember);
+        const { expires, token } = response.data;
+
+        // Check if user checked to remember login, if so, save it to localStorage
+        if (remember) { api.users.setStorage(token, expires); }
+
+        // Update store with token
+        yield put(setIsSubmitting(false));
+        yield put(setLogin(token, expires));
       } catch (err) {
-        const error = err.response.data.message || err;
-        yield put(loginError(error));
+        // Check if normal response message exist, if not, return the whole error
+        const errorMessage = err.response.data.message || err;
+
+        // Update store with error message
+        yield put(setIsSubmitting(false));
+        yield put(setError(true, errorMessage));
       }
     },
 
     * forgotSubmit(action) {
-      const { forgotError, forgotSuccess } = this.actions;
+      const { setError, setForgot, setIsSubmitting } = this.actions;
       const username = action.payload;
 
       try {
+        // Restore store to defaults
+        yield put(setIsSubmitting(true));
+        yield put(setError(false, ''));
+        
+        // Do call to our api users endpoint
         const response = yield api.users.forgot('-uniqueAccountId_1', username);
-        yield put(forgotSuccess(response.data.message));
+
+        // Update store with success message
+        yield put(setIsSubmitting(false));
+        yield put(setForgot(response.data.message));
       } catch (err) {
-        const error = err.response.data.message || err;
-        yield put(forgotError(error));
+        const errorMessage = err.response.data.message || err;
+        yield put(setIsSubmitting(false));
+        yield put(setError(true, errorMessage));
+      }
+    },
+
+    * logout() {
+      const { setLogin } = this.actions;
+
+      try {
+        api.users.logout();
+        yield put(setLogin('', ''));
+      } catch (err) {
+        console.log(err);
       }
     },
   },
 
-  // End Sags
+  // --- End Sags --- \\
 
 });

@@ -12,9 +12,17 @@ export default kea({
   }),
 
   // Reducer Logic
-  reducers: ({ actions }) => ({
-    collapsed: [false, PropTypes.bool, {
-      [actions.toggle]: state => !state,
-    }],
+  reducers: ({ actions, key }) => ({
+    collapsed: [
+      false,
+      PropTypes.bool,
+      {
+        [actions.toggle]: (state, payload) => {
+          console.log(payload);
+          if (payload.key === key) { return !state; }
+          return state;
+        },
+      },
+    ],
   }),
 });
