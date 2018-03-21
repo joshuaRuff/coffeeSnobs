@@ -18,10 +18,22 @@ class CheckIfLoggedIn extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    // Once action goes through and it succesfully got a token, change route to app
+
     if (!this.props.login.token && nextProps.login.token) {
-      this.props.history.push('/');
+      // Perform logic here for whenever a user becomes logged in
+
+      // An array of parent routes that if logged in, will direct the user back to app home page
+      // A parent route is the first param after the domain.
+      // Example is http://my.domain.com/test/colors/blue, the parent route would be: /test
+      const noAuthAllowedRoutes = ['/auth'];
+
+      // Check if the next Props path parent exists in our noAuthAllowedRoutes array
+      if (noAuthAllowedRoutes.indexOf(nextProps.match.path) >= 0) {
+        this.props.history.push('/');
+      }
     }
+
+    // If a logged in token was removed from store, direct user to login page
     if (this.props.login.token && !nextProps.login.token) {
       this.props.history.push('/auth/login');
     }

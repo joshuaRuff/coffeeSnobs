@@ -1,13 +1,23 @@
 import React from 'react';
-import { Layout, Row, Col, Card } from 'antd';
+import { Route, Switch } from 'react-router-dom';
+import { Layout } from 'antd';
 
 import CheckIfLoggedIn from 'authentication/components/checkIfLoggedIn';
 import SideNav from './components/sideNav';
 import TopNav from './components/topNav';
 
+import RouteOne from './appRoute1';
+import RouteTwo from './appRoute2';
+
 import './index.scss';
 
 const { Content } = Layout;
+
+const Default = () => (
+  <div>
+    <h2>Default Route if none is chosen</h2>
+  </div>
+);
 
 
 export default class AppLayout extends React.Component {
@@ -21,7 +31,7 @@ export default class AppLayout extends React.Component {
     return (
       <Layout id="AppLayout">
         <CheckIfLoggedIn />
-        <SideNav id="mainSideNav" />
+        <SideNav id="mainSideNav" path={this.props.location.pathname} />
         <Layout>
           <TopNav />
           <Content
@@ -32,18 +42,11 @@ export default class AppLayout extends React.Component {
               minHeight: 280,
             }}
           >
-            <Row gutter={16}>
-              <Col span={8}>
-                <Card title="Test Header">
-                  <p>Test Content</p>
-                </Card>
-              </Col>
-              <Col span={8}>
-                <Card title="Test Header 2">
-                  <p>Test Content 2</p>
-                </Card>
-              </Col>
-            </Row>
+            <Switch>
+              <Route exact path="/routeone" component={RouteOne} />
+              <Route exact path="/routetwo" component={RouteTwo} />
+              <Route exact path="/" component={Default} />
+            </Switch>
           </Content>
         </Layout>
       </Layout>
