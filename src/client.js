@@ -15,7 +15,6 @@ import store from './store';
 // Include Component
 import App from './app';
 import Auth from './authentication';
-import Counter from './counter';
 
 const history = createHistory();
 
@@ -28,7 +27,6 @@ ReactDOM.render(
     <ConnectedRouter history={history}>
       <Switch>
         <Route path="/auth" component={Auth} />
-        <Route path="/counter" component={Counter} />
         <Route component={App} />
       </Switch>
     </ConnectedRouter>

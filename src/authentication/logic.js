@@ -10,18 +10,12 @@ export default kea({
   actions: () => ({
     forgot: username => username,
     setForgot: message => message,
-    forgotError: error => error,
-    forgotSuccess: data => data,
     login: (username, password, remember) => ({ username, password, remember }),
-    setLogin: (token, expires) => ({ token, expires }),
-    setError: (error, errorMessage) => ({ error, errorMessage }),
-    loginSuccess: data => data,
-    loginError: error => ({ error }),
     logout: () => true,
-    register: value => ({ value }),
-    reset: username => ({ username }),
-    submitFailure: error => ({ error }),
+    register: formData => formData,
+    setError: (error, errorMessage) => ({ error, errorMessage }),
     setIsSubmitting: value => ({ value }),
+    setLogin: (token, expires) => ({ token, expires }),
   }),
 
   reducers: ({ actions }) => (
@@ -81,6 +75,7 @@ export default kea({
     [actions.login]: workers.loginSubmit,
     [actions.forgot]: workers.forgotSubmit,
     [actions.logout]: workers.logout,
+    [actions.register]: workers.registerSubmit,
   }),
 
   workers: {
@@ -121,7 +116,7 @@ export default kea({
         // Restore store to defaults
         yield put(setIsSubmitting(true));
         yield put(setError(false, ''));
-        
+
         // Do call to our api users endpoint
         const response = yield api.users.forgot('-uniqueAccountId_1', username);
 
@@ -143,6 +138,27 @@ export default kea({
         yield put(setLogin('', ''));
       } catch (err) {
         console.log(err);
+      }
+    },
+
+    * registerSubmit(action) {
+      const { setError, setLogin, setIsSubmitting } = this.actions;
+      try {
+        // Restore store to defaults
+        yield put(setIsSubmitting(true));
+        yield put(setError(false, ''));
+
+        // Do call to our api users endpoint
+        const response = yield api.users.register('-uniqueAccountId_1', action.payload);
+        const { expires, token } = response.data;
+
+        // Update store with success message
+        yield put(setIsSubmitting(false));
+        yield put(setLogin(token, expires));
+      } catch (err) {
+        const errorMessage = err.response.data.message || err;
+        yield put(setIsSubmitting(false));
+        yield put(setError(true, errorMessage));
       }
     },
   },

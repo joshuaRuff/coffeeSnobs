@@ -11,6 +11,18 @@ const login = (accountId, username, password) => {
   return axios.post(url, { username, password });
 };
 
+const register = (accountId, params) => {
+  const postParams = {
+    username: params.email || '',
+    password: params.password || '',
+    firstName: params.firstName || '',
+    lastName: params.lastName || '',
+    metadata: params.metadata || {},
+  };
+  const url = `${config.apiUrl}/user/${accountId}/register?apikey=${config.apikey}`;
+  return axios.post(url, postParams);
+};
+
 const setStorage = (token, exp) => {
   localStorage.setItem('token', token);
   localStorage.setItem('expires', exp);
@@ -25,5 +37,6 @@ export default {
   forgot,
   login,
   logout,
+  register,
   setStorage,
 };

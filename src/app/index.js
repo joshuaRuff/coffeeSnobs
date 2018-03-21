@@ -1,6 +1,7 @@
 import React from 'react';
 import { Layout, Row, Col, Card } from 'antd';
 
+import CheckIfLoggedIn from 'authentication/components/checkIfLoggedIn';
 import SideNav from './components/sideNav';
 import TopNav from './components/topNav';
 
@@ -19,6 +20,7 @@ export default class AppLayout extends React.Component {
   render() {
     return (
       <Layout id="AppLayout">
+        <CheckIfLoggedIn />
         <SideNav id="mainSideNav" />
         <Layout>
           <TopNav />

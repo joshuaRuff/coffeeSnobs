@@ -1,2 +1,14 @@
 // App wide styles
-.ant-input-affix-wrapper .ant-input{ min-height: auto;}
+
+.login-form {
+  max-width: 300px;
+  .login-form-forgot {
+    float: right;
+  }
+  .login-form-button {
+    width: 100%;
+  }
+  .ant-input-affix-wrapper .ant-input {
+    min-height: 40px;
+  }
+}

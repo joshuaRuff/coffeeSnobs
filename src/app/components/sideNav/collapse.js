@@ -7,7 +7,6 @@ import SideNavLogic from './logic';
 class CollpaseSideNav extends React.Component {
 
   render() {
-    console.log(this.props);
     const { collapsed } = this.props;
     const { toggle } = this.actions;
     const className = this.props.className || 'trigger';

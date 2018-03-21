@@ -1,54 +1,14 @@
 import React from 'react';
 import { connect } from 'kea';
 import { Link } from 'react-router-dom';
-import { Alert, Button, Checkbox, Form, Icon, Input } from 'antd';
+import { Button, Checkbox, Form, Icon, Input } from 'antd';
+import Alert from 'common/components/alert';
 
-import './login.scss';
 import authenicationLogic from '../logic';
 
 const FormItem = Form.Item;
 
 class NormalLoginForm extends React.Component {
-
-  componentWillMount() {
-    // Check if token exists, if it does and is not expired, login user in.
-    const token = this.getToken();
-    if (token) {
-      this.actions.setLogin(token.token, token.expires);
-      this.props.history.push('/');
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    // Once action goes through and it succesfully got a token, change route to app
-    if (nextProps.login.token) {
-      this.props.history.push('/');
-    }
-  }
-
-  getToken = () => {
-    // Check localstorage if a token exists
-    const { token, expires } = localStorage;
-
-    if (token && expires && this.checkTime(expires)) {
-      // If token hasn't expired, return it
-      return { token, expires };
-    }
-    return false;
-  }
-
-  checkTime = (dateString) => {
-    if (dateString) {
-      try {
-        const now = Date.now();
-        const expires = new Date(dateString).getTime();
-        if (now < expires) { return true; }
-      } catch (err) {
-        return false;
-      }
-    }
-    return false;
-  }
 
   handleSubmit = (e) => {
     e.preventDefault();
@@ -67,17 +27,16 @@ class NormalLoginForm extends React.Component {
     const { isSubmitting } = this.props;
     const { error, errorMessage } = this.props.error;
 
-    const errorAlert = (error) ?
-      (<Alert
-        message={errorMessage}
-        type="error"
-        closable
-      />) : null;
-
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
+        <h1>Login</h1>
         <FormItem>
-          {errorAlert}
+          <Alert
+            closable
+            message={errorMessage}
+            type="error"
+            active={error}
+          />
         </FormItem>
         <FormItem>
           {getFieldDecorator('userName', {
@@ -104,7 +63,7 @@ class NormalLoginForm extends React.Component {
           <Button type="primary" htmlType="submit" className="login-form-button" disabled={isSubmitting}>
             Log in {isSubmitting ? 'Submitting...' : 'Submit!'}
           </Button>
-          Or <Link to="/register">register now!</Link>
+          Or <Link to="/auth/register">register now!</Link>
         </FormItem>
       </Form>
     );

@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'kea';
 import { Link } from 'react-router-dom';
-import { Alert, Button, Form, Icon, Input } from 'antd';
+import { Button, Form, Icon, Input } from 'antd';
+import Alert from 'common/components/alert';
 
-import './login.scss';
 import authenicationLogic from '../logic';
 
 const FormItem = Form.Item;
@@ -24,31 +24,19 @@ class ForgotForm extends React.Component {
     const { isSubmitting } = this.props;
     const { error, errorMessage } = this.props.error;
 
-    const errorAlert = (error) ?
-      (
-        <Alert
-          message={errorMessage}
-          type="error"
-          closable
-        />
-      ) : null;
-
     const message = (this.props.forgot.message) ?
       <Link to="/auth/login">{this.props.forgot.message}. Go back to login</Link> : null;
 
-    const successAlert = (message) ?
-      (
-        <Alert
-          message={message}
-          type="success"
-          closable
-        />
-      ) : null;
-
     return (
       <Form onSubmit={this.handleSubmit} className="login-form">
+        <h1>Forgot</h1>
         <FormItem>
-          {errorAlert}
+        <Alert
+          active={error}
+          closable
+          message={errorMessage}
+          type="error"
+        />
         </FormItem>
         <FormItem>
           {getFieldDecorator('userName', {
@@ -56,7 +44,12 @@ class ForgotForm extends React.Component {
           })(<Input prefix={<Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Username" />)}
         </FormItem>
         <FormItem>
-          {successAlert}
+          <Alert
+            active={message}
+            closable
+            message={message}
+            type="success"
+          />
         </FormItem>
         <FormItem>
           <Button type="primary" htmlType="submit" className="login-form-button" disabled={isSubmitting}>
