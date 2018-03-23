@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'kea';
 import { Button } from 'antd';
 
-import authenicationLogic from '../logic';
+import authenicationLogic from 'authentication/logic';
 
 class Logout extends React.Component {
 

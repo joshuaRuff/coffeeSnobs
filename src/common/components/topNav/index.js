@@ -1,7 +1,7 @@
 import React from 'react';
 import { Layout } from 'antd';
 
-import Logout from 'authentication/components/logout';
+import Logout from 'common/components/logout';
 import CollapseSideNav from '../sideNav/collapse';
 
 const { Header } = Layout;

@@ -27,7 +27,7 @@ export default class SideNav extends React.Component {
     // Map our array of objects into a menu item. Also check for if the current route
     // passed into this component exists as a route, if so, select that index as the defaultRoute
     const menuItems = menuItemData.map((data, index) => {
-      if (path === data.route) { defaultRoute = index.toString(); }
+      if (path.indexOf(data.route) > -1) { defaultRoute = index.toString(); }
       return (
         <Menu.Item key={index}>
           <Link to={data.route}>

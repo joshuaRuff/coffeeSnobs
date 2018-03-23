@@ -2,10 +2,13 @@ import { Route, Switch } from 'react-router-dom';
 import { Row, Col } from 'antd';
 
 import React from 'react';
-import CheckIfLoggedIn from './components/checkIfLoggedIn';
-import Login from './components/login';
-import Forgot from './components/forgot';
-import Register from './components/register';
+
+import CheckIfLoggedIn from 'common/components/checkIfLoggedIn';
+import FourOFour from 'errorCodes/404';
+
+import Login from './login';
+import Forgot from './forgot';
+import Register from './register';
 
 export default class Auth extends React.Component {
 
@@ -23,7 +26,7 @@ export default class Auth extends React.Component {
             <Route exact path="/auth/login" component={Login} />
             <Route exact path="/auth/forgot" component={Forgot} />
             <Route exact path="/auth/register" component={Register} />
-            <Route component={Login} />
+            <Route component={FourOFour} />
           </Switch>
         </Col>
       </Row>

@@ -2,7 +2,7 @@ import React from 'react';
 import { withRouter } from 'react-router-dom';
 import { connect } from 'kea';
 
-import authenicationLogic from '../logic';
+import authenicationLogic from 'authentication/logic';
 
 class CheckIfLoggedIn extends React.Component {
 

@@ -2,9 +2,10 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { Layout } from 'antd';
 
-import CheckIfLoggedIn from 'authentication/components/checkIfLoggedIn';
-import SideNav from './components/sideNav';
-import TopNav from './components/topNav';
+import CheckIfLoggedIn from 'common/components/checkIfLoggedIn';
+import SideNav from 'common/components/sideNav';
+import TopNav from 'common/components/topNav';
+import FourOFour from 'errorCodes/404';
 
 import RouteOne from './appRoute1';
 import RouteTwo from './appRoute2';
@@ -43,9 +44,10 @@ export default class AppLayout extends React.Component {
             }}
           >
             <Switch>
-              <Route exact path="/routeone" component={RouteOne} />
-              <Route exact path="/routetwo" component={RouteTwo} />
+              <Route path="/routeone" component={RouteOne} />
+              <Route path="/routetwo" component={RouteTwo} />
               <Route exact path="/" component={Default} />
+              <Route component={FourOFour} />
             </Switch>
           </Content>
         </Layout>
