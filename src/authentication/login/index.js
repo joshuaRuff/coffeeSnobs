@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'kea';
+import queryString from 'query-string';
 import { Link } from 'react-router-dom';
 import { Button, Checkbox, Form, Icon, Input } from 'antd';
 import Alert from 'common/components/alert';
@@ -10,6 +11,12 @@ const FormItem = Form.Item;
 
 class NormalLoginForm extends React.Component {
 
+  componentDidMount() {
+    const queryParams = queryString.parse(this.props.location.search);
+    const accountId = queryParams.accountId || '';
+    this.props.form.setFieldsValue({ accountId });
+  }
+
   handleSubmit = (e) => {
     e.preventDefault();
 
@@ -17,14 +24,19 @@ class NormalLoginForm extends React.Component {
       if (!err) {
         // If form passed validation check, perform custom form actions here
         const { login } = this.actions;
-        login(form.userName, form.password, form.remember);
+        login({
+          accountId: form.accountId,
+          userName: form.userName,
+          password: form.password,
+          remember: form.remember,
+        });
       }
     });
   };
 
   render() {
-    const { getFieldDecorator } = this.props.form;
     const { isSubmitting } = this.props;
+    const { getFieldDecorator } = this.props.form;
     const { error, errorMessage } = this.props.error;
 
     return (
@@ -37,6 +49,11 @@ class NormalLoginForm extends React.Component {
             type="error"
             active={error}
           />
+        </FormItem>
+        <FormItem>
+          {getFieldDecorator('accountId', {
+            rules: [{ required: true, message: 'Please input your account id!' }],
+          })(<Input prefix={<Icon type="team" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="Account Id" />)}
         </FormItem>
         <FormItem>
           {getFieldDecorator('userName', {

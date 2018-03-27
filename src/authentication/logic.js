@@ -10,16 +10,24 @@ export default kea({
   actions: () => ({
     forgot: username => username,
     setForgot: message => message,
-    login: (username, password, remember) => ({ username, password, remember }),
+    login: params => params,
     logout: () => true,
     register: formData => formData,
-    setError: (error, errorMessage) => ({ error, errorMessage }),
     setIsSubmitting: value => ({ value }),
+    setError: (error, errorMessage) => ({ error, errorMessage }),
+    setAccountId: value => value,
     setLogin: (token, expires) => ({ token, expires }),
   }),
 
   reducers: ({ actions }) => (
     {
+      accountId: [
+        '',
+        PropTypes.string,
+        {
+          [actions.setAccountId]: (state, payload) => payload,
+        },
+      ],
       isSubmitting: [
         false,
         PropTypes.bool,
@@ -80,8 +88,19 @@ export default kea({
 
   workers: {
     * loginSubmit(action) {
-      const { setIsSubmitting, setLogin, setError } = this.actions;
-      const { username, password, remember } = action.payload;
+      const {
+        setIsSubmitting,
+        setLogin,
+        setError,
+        setAccountId,
+      } = this.actions;
+
+      const {
+        accountId,
+        userName,
+        password,
+        remember,
+      } = action.payload;
 
       try {
         // Restore store to defaults
@@ -89,7 +108,7 @@ export default kea({
         yield put(setError(false, ''));
 
         // Do call to our api users endpoint
-        const response = yield api.users.login('-uniqueAccountId_1', username, password, remember);
+        const response = yield api.users.login(accountId, userName, password);
         const { expires, token } = response.data;
 
         // Check if user checked to remember login, if so, save it to localStorage
@@ -97,6 +116,7 @@ export default kea({
 
         // Update store with token
         yield put(setIsSubmitting(false));
+        yield put(setAccountId(accountId));
         yield put(setLogin(token, expires));
       } catch (err) {
         // Check if normal response message exist, if not, return the whole error
