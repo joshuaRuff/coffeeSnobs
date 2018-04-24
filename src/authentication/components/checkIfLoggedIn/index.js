@@ -39,6 +39,14 @@ class CheckIfLoggedIn extends React.Component {
     }
   }
 
+  componentDidUpdate(prevProps) {
+    const { login, profile } = this.props;
+
+    if (login.token && prevProps.login.token !== login.token && !profile.email) {
+      this.actions.getProfile(login.token);
+    }
+  }
+
   getToken = () => {
     // Check localstorage if a token exists
     const { token, expires } = localStorage;
@@ -64,16 +72,14 @@ class CheckIfLoggedIn extends React.Component {
   }
 
   render() {
-    return (
-      <div />
-    );
+    return null;
   }
 
 }
 
 const keaLogic = {
-  props: [authenicationLogic, ['login']],
-  actions: [authenicationLogic, ['setLogin']],
+  props: [authenicationLogic, ['login', 'profile']],
+  actions: [authenicationLogic, ['setLogin', 'getProfile']],
 };
 
 export default withRouter(connect(keaLogic)(CheckIfLoggedIn));

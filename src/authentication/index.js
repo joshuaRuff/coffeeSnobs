@@ -3,7 +3,7 @@ import { Row, Col } from 'antd';
 
 import React from 'react';
 
-import CheckIfLoggedIn from 'common/components/checkIfLoggedIn';
+import CheckIfLoggedIn from 'authentication/components/checkIfLoggedIn';
 import FourOFour from 'errorCodes/404';
 
 import Login from './login';

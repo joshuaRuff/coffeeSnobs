@@ -2,9 +2,8 @@ import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { Layout } from 'antd';
 
-import CheckIfLoggedIn from 'common/components/checkIfLoggedIn';
-import SideNav from 'common/components/sideNav';
-import TopNav from 'common/components/topNav';
+import { CheckIfLoggedIn, RestrictedComponent } from 'authentication/components';
+import { SideNav, TopNav } from 'common/components';
 import FourOFour from 'errorCodes/404';
 
 import RouteOne from './appRoute1';
@@ -25,14 +24,20 @@ export default class AppLayout extends React.Component {
 
   constructor() {
     super();
-    this.state = {};
+    this.state = {
+      menuItems: [
+        { title: 'Route 1', icon: 'user', route: '/routeone' },
+        { title: 'Route 2', icon: 'video-camera', route: '/routetwo' },
+        { title: 'Route 3', icon: 'upload', route: '/routethree' },
+      ],
+    };
   }
 
   render() {
     return (
       <Layout id="AppLayout">
         <CheckIfLoggedIn />
-        <SideNav id="mainSideNav" path={this.props.location.pathname} />
+        <SideNav id="mainSideNav" path={this.props.location.pathname} items={this.state.menuItems} />
         <Layout>
           <TopNav />
           <Content
@@ -44,9 +49,9 @@ export default class AppLayout extends React.Component {
             }}
           >
             <Switch>
-              <Route path="/routeone" component={RouteOne} />
-              <Route path="/routetwo" component={RouteTwo} />
-              <Route exact path="/" component={Default} />
+              <RestrictedComponent error={<h2>Access Denied</h2>} comp={Route} path="/routeone" component={RouteOne} />
+              <RestrictedComponent error={<h2>Access Denied</h2>} comp={Route} path="/routetwo" component={RouteTwo} />
+              <RestrictedComponent error={<h2>Access Denied</h2>} comp={Route} path="/" component={Default} exact />
               <Route component={FourOFour} />
             </Switch>
           </Content>

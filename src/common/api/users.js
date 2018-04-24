@@ -7,8 +7,13 @@ const forgot = (accountId, username) => {
 };
 
 const login = (accountId, username, password) => {
-  const url = `${config.apiUrl}/user/${accountId}/login?apikey=${config.apikey}`;
+  const url = `${config.apiUrl}/user/${accountId}/login?apikey=${config.apikey}&profile=true`;
   return axios.post(url, { username, password });
+};
+
+const getProfile = (accountId, token) => {
+  const url = `${config.apiUrl}/user/${accountId}/profile?apikey=${config.apikey}`;
+  return axios({ url, method: 'get', headers: { Authorization: token } });
 };
 
 const register = (accountId, params) => {
@@ -35,6 +40,7 @@ const logout = () => {
 
 export default {
   forgot,
+  getProfile,
   login,
   logout,
   register,

@@ -1,7 +1,7 @@
 import { kea } from 'kea';
 import { put } from 'redux-saga/effects';
 import PropTypes from 'prop-types';
-import api from 'common/api';
+import { accounts, users } from 'common/api';
 
 export default kea({
 
@@ -9,32 +9,22 @@ export default kea({
 
   actions: () => ({
     forgot: username => username,
-    setForgot: message => message,
+    getAccounts: token => token,
+    getProfile: token => token,
     login: params => params,
     logout: () => true,
     register: formData => formData,
     setIsSubmitting: value => ({ value }),
     setError: (error, errorMessage) => ({ error, errorMessage }),
-    setAccountId: value => value,
-    setLogin: (token, expires) => ({ token, expires }),
+    setForgot: message => message,
+    setLogin: (token, expires, role) => ({ token, expires, role }),
+    setProfile: params => params,
+    setSelectedAccount: accountId => accountId,
+    setAccounts: accountList => accountList,
   }),
 
   reducers: ({ actions }) => (
     {
-      accountId: [
-        '',
-        PropTypes.string,
-        {
-          [actions.setAccountId]: (state, payload) => payload,
-        },
-      ],
-      isSubmitting: [
-        false,
-        PropTypes.bool,
-        {
-          [actions.setIsSubmitting]: (state, payload) => payload.value,
-        },
-      ],
 
       error: [
         {},
@@ -45,6 +35,25 @@ export default kea({
             error: payload.error,
             errorMessage: payload.errorMessage,
           }),
+        },
+      ],
+
+      forgot: [
+        {},
+        PropTypes.object,
+        {
+          [actions.setForgot]: (state, payload) => ({
+            ...state,
+            message: payload,
+          }),
+        },
+      ],
+
+      isSubmitting: [
+        false,
+        PropTypes.bool,
+        {
+          [actions.setIsSubmitting]: (state, payload) => payload.value,
         },
       ],
 
@@ -61,14 +70,26 @@ export default kea({
         },
       ],
 
-      forgot: [
+      profile: [
         {},
         PropTypes.object,
         {
-          [actions.setForgot]: (state, payload) => ({
-            ...state,
-            message: payload,
-          }),
+          [actions.setProfile]: (state, payload) => payload,
+        },
+      ],
+
+      accounts: [
+        {},
+        PropTypes.object,
+        {
+          [actions.setAccounts]: (state, payload) => payload,
+        },
+      ],
+      selectedAccount: [
+        '',
+        PropTypes.string,
+        {
+          [actions.setSelectedAccount]: (state, payload) => payload,
         },
       ],
     }
@@ -80,23 +101,47 @@ export default kea({
   // --- Sagas --- \\
 
   takeLatest: ({ actions, workers }) => ({
-    [actions.login]: workers.loginSubmit,
     [actions.forgot]: workers.forgotSubmit,
+    [actions.getAccounts]: workers.getAccounts,
+    [actions.getProfile]: workers.getProfile,
+    [actions.login]: workers.loginSubmit,
     [actions.logout]: workers.logout,
     [actions.register]: workers.registerSubmit,
   }),
 
   workers: {
+
+    * getAccounts(action) {
+      const { setAccounts } = this.actions;
+      const token = action.payload;
+      try {
+        const accountList = yield accounts.getUserAccounts(token);
+        yield put(setAccounts(accountList.data));
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
+    * getProfile(action) {
+      const { setProfile } = this.actions;
+      const token = action.payload;
+      try {
+        const profile = yield users.getProfile('-uniqueAccountId_1', token);
+        yield put(setProfile(profile.data));
+      } catch (err) {
+        console.log(err);
+      }
+    },
+
     * loginSubmit(action) {
       const {
+        setError,
         setIsSubmitting,
         setLogin,
-        setError,
-        setAccountId,
+        setProfile,
       } = this.actions;
 
       const {
-        accountId,
         userName,
         password,
         remember,
@@ -108,15 +153,15 @@ export default kea({
         yield put(setError(false, ''));
 
         // Do call to our api users endpoint
-        const response = yield api.users.login(accountId, userName, password);
-        const { expires, token } = response.data;
+        const response = yield users.login('-uniqueAccountId_1', userName, password);
+        const { expires, token, profile } = response.data;
 
         // Check if user checked to remember login, if so, save it to localStorage
-        if (remember) { api.users.setStorage(token, expires); }
+        if (remember) { users.setStorage(token, expires); }
 
         // Update store with token
         yield put(setIsSubmitting(false));
-        yield put(setAccountId(accountId));
+        yield put(setProfile(profile));
         yield put(setLogin(token, expires));
       } catch (err) {
         // Check if normal response message exist, if not, return the whole error
@@ -138,7 +183,7 @@ export default kea({
         yield put(setError(false, ''));
 
         // Do call to our api users endpoint
-        const response = yield api.users.forgot('-uniqueAccountId_1', username);
+        const response = yield users.forgot('-uniqueAccountId_1', username);
 
         // Update store with success message
         yield put(setIsSubmitting(false));
@@ -154,8 +199,8 @@ export default kea({
       const { setLogin } = this.actions;
 
       try {
-        api.users.logout();
-        yield put(setLogin('', ''));
+        users.logout();
+        yield put(setLogin('', '', ''));
       } catch (err) {
         console.log(err);
       }
@@ -169,12 +214,12 @@ export default kea({
         yield put(setError(false, ''));
 
         // Do call to our api users endpoint
-        const response = yield api.users.register('-uniqueAccountId_1', action.payload);
+        const response = yield users.register('-uniqueAccountId_1', action.payload);
         const { expires, token } = response.data;
 
         // Update store with success message
         yield put(setIsSubmitting(false));
-        yield put(setLogin(token, expires));
+        yield put(setLogin(token, expires, 'user'));
       } catch (err) {
         const errorMessage = err.response.data.message || err;
         yield put(setIsSubmitting(false));
