@@ -16,7 +16,7 @@ export default kea({
     setIsSubmitting: value => ({ value }),
     setError: (error, errorMessage) => ({ error, errorMessage }),
     setForgot: message => message,
-    setLogin: (token, expires, role) => ({ token, expires, role }),
+    setLogin: (token, expires) => ({ token, expires }),
     setProfile: params => params,
   }),
 
@@ -189,7 +189,7 @@ export default kea({
 
       try {
         usersApi.logout();
-        yield put(setLogin('', '', ''));
+        yield put(setLogin('', ''));
       } catch (err) {
         console.log(err);
       }
@@ -208,7 +208,7 @@ export default kea({
 
         // Update store with success message
         yield put(setIsSubmitting(false));
-        yield put(setLogin(token, expires, 'user'));
+        yield put(setLogin(token, expires));
       } catch (err) {
         const errorMessage = err.response.data.message || err;
         yield put(setIsSubmitting(false));

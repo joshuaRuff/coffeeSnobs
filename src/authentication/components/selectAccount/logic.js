@@ -1,7 +1,7 @@
 import { kea } from 'kea';
 import { put } from 'redux-saga/effects';
 import PropTypes from 'prop-types';
-import { accountsApi, pagesApi } from 'common/api';
+import { accountsApi } from 'common/api';
 
 import authenicationLogic from 'authentication/logic';
 
@@ -56,9 +56,13 @@ export default kea({
         const login = yield this.get('login');
         if (login.token) {
           const accountList = yield accountsApi.getUserAccounts(login.token);
-          yield put(setAccounts(accountList.data));
-          const accounts = Object.keys(accountList.data);
-          yield put(selectAccount(accounts[0]));
+
+          // If our response is a string, it is an error message
+          if (typeof accountList.data !== 'string') {
+            yield put(setAccounts(accountList.data));
+            const accounts = Object.keys(accountList.data);
+            yield put(selectAccount(accounts[0]));
+          }
         } else { throw Error('Missing token for getAccounts'); }
       } catch (err) {
         console.log(err);
