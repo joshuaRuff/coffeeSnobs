@@ -19,25 +19,31 @@ const Default = () => (
   </div>
 );
 
-
 export default class AppLayout extends React.Component {
 
   constructor() {
     super();
     this.state = {
-      menuItems: [
-        { title: 'Route 1', icon: 'user', route: '/routeone' },
-        { title: 'Route 2', icon: 'video-camera', route: '/routetwo' },
-        { title: 'Route 3', icon: 'upload', route: '/routethree' },
-      ],
+      menuItems: {
+        '/routeone': { title: 'Route 1', icon: 'user' },
+        '/routetwo': { title: 'Route 2', icon: 'video-camera' },
+        '/routethree': { title: 'Route 3', icon: 'upload' },
+      },
     };
   }
 
   render() {
+    const accessDenied = <h2>Access Denied</h2>;
+
     return (
       <Layout id="AppLayout">
         <CheckIfLoggedIn />
-        <SideNav id="mainSideNav" path={this.props.location.pathname} items={this.state.menuItems} />
+        <SideNav
+          id="mainSideNav"
+          path={this.props.location.pathname}
+          items={this.state.menuItems}
+          title={<h3>Sardius Control Panel</h3>}
+        />
         <Layout>
           <TopNav />
           <Content
@@ -49,9 +55,9 @@ export default class AppLayout extends React.Component {
             }}
           >
             <Switch>
-              <RestrictedComponent error={<h2>Access Denied</h2>} comp={Route} path="/routeone" component={RouteOne} />
-              <RestrictedComponent error={<h2>Access Denied</h2>} comp={Route} path="/routetwo" component={RouteTwo} />
-              <RestrictedComponent error={<h2>Access Denied</h2>} comp={Route} path="/" component={Default} exact />
+              <RestrictedComponent error={accessDenied} comp={Route} path="/routeone" component={RouteOne} />
+              <RestrictedComponent error={accessDenied} comp={Route} path="/routetwo" component={RouteTwo} />
+              <Route path="/" component={Default} exact />
               <Route component={FourOFour} />
             </Switch>
           </Content>

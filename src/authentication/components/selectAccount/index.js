@@ -1,46 +1,28 @@
 import React from 'react';
 import { connect } from 'kea';
+import { withRouter } from 'react-router-dom';
 import { Menu, Dropdown, Icon, Button } from 'antd';
 
-import authenicationLogic from 'authentication/logic';
+import selectAccountLogic from './logic';
 
 class selectAccount extends React.Component {
 
   componentDidMount() {
-    // Allows for setting of default
-    const { defaultChoice = '', login } = this.props;
-
-    if (typeof defaultChoice === 'string') {
-      this.actions.setSelectedAccount(defaultChoice);
-    }
-
-    // If we have a token, go ahead and fetch accounts
-    if (login.token) {
-      this.actions.getAccounts(login.token);
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    const { login } = this.props;
-
-    // If there is a new token, re-fetch user data
-    if (login.token && prevProps.login.token !== login.token) {
-      this.actions.getAccounts(login.token);
-    }
+    this.actions.getAccounts();
   }
 
   handleMenuClick = (e) => {
-    this.actions.setSelectedAccount(e.key);
+    this.actions.selectAccount(e.key);
+    this.props.history.push('/');
   }
 
   render() {
     const { accounts, selectedAccount } = this.props;
     const accountList = Object.keys(accounts);
-    const selectedAccountInfo = accounts[selectedAccount] || {};
 
     const menuItems = accountList.map((id) => {
       const account = accounts[id];
-      const cssClass = (id === this.props.selectedAccount) ? 'selected' : '';
+      const cssClass = (id === selectedAccount.id) ? 'selected' : '';
       return <Menu.Item key={id} className={cssClass}>{account.name}</Menu.Item>;
     });
 
@@ -50,7 +32,7 @@ class selectAccount extends React.Component {
       </Menu>
     );
 
-    const selectedText = selectedAccountInfo.name || 'Select Account';
+    const selectedText = selectedAccount.name || 'Select Account';
 
     return (
       <Dropdown overlay={menu}>
@@ -64,12 +46,12 @@ class selectAccount extends React.Component {
 }
 
 const keaLogic = {
-  props: [authenicationLogic, ['accounts', 'login', 'selectedAccount']],
-  actions: [authenicationLogic, ['getAccounts', 'setSelectedAccount']],
+  props: [
+    selectAccountLogic, ['accounts', 'selectedAccount'],
+  ],
+  actions: [
+    selectAccountLogic, ['getAccounts', 'selectAccount'],
+  ],
 };
 
-// Important to connect kea to the component before we pass it onto antd.
-// Antd doesn't forward everything, like this.actions to the component
-const WrappedNormalLoginForm = connect(keaLogic)(selectAccount);
-
-export default WrappedNormalLoginForm;
+export default withRouter(connect(keaLogic)(selectAccount));

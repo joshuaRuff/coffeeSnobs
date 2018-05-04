@@ -6,11 +6,16 @@ import authenicationLogic from 'authentication/logic';
 
 class CheckIfLoggedIn extends React.Component {
 
-  componentWillMount() {
+  componentDidMount() {
     if (!this.props.login.token) {
       const token = this.getToken();
       if (token) {
         this.actions.setLogin(token.token, token.expires);
+        this.props.history.push('/');
+        // Check if profile exists from login, if not, go get profile
+        if (!this.props.profile.uid) {
+          this.actions.getProfile();
+        }
       } else {
         this.props.history.push('/auth/login');
       }
@@ -36,14 +41,6 @@ class CheckIfLoggedIn extends React.Component {
     // If a logged in token was removed from store, direct user to login page
     if (this.props.login.token && !nextProps.login.token) {
       this.props.history.push('/auth/login');
-    }
-  }
-
-  componentDidUpdate(prevProps) {
-    const { login, profile } = this.props;
-
-    if (login.token && prevProps.login.token !== login.token && !profile.email) {
-      this.actions.getProfile(login.token);
     }
   }
 

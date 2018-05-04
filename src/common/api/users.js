@@ -16,6 +16,22 @@ const getProfile = (accountId, token) => {
   return axios({ url, method: 'get', headers: { Authorization: token } });
 };
 
+const getUser = (accountId, token, uid) => {
+  const url = `${config.apiUrl}/user/${accountId}/${uid}?apikey=${config.apikey}&scp=true`;
+  return axios({ url, method: 'get', headers: { Authorization: token } });
+};
+
+const getUsers = (accountId, token, nextPageKey) => {
+  const nextPageQuery = (nextPageKey) ? `&nextPage=${nextPageKey}` : '';
+  const url = `${config.apiUrl}/user/${accountId}/query?apikey=${config.apikey}&scp=true&limit=50&attributes=email,uid,metadata${nextPageQuery}`;
+  return axios({ url, method: 'get', headers: { Authorization: token } });
+};
+
+const queryUsers = (accountId, token, dynamoKey, value) => {
+  const url = `${config.apiUrl}/user/${accountId}/query?apikey=${config.apikey}&scp=true&filter=${dynamoKey}&contains=${value}&attributes=email,uid,metadata`;
+  return axios({ url, method: 'get', headers: { Authorization: token } });
+};
+
 const register = (accountId, params) => {
   const postParams = {
     username: params.email || '',
@@ -41,8 +57,11 @@ const logout = () => {
 export default {
   forgot,
   getProfile,
+  getUser,
+  getUsers,
   login,
   logout,
+  queryUsers,
   register,
   setStorage,
 };

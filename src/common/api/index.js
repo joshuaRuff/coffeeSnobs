@@ -1,4 +1,5 @@
-import users from './users';
-import accounts from './accounts';
+import accountsApi from './accounts';
+import pagesApi from './pages';
+import usersApi from './users';
 
-export { accounts, users };
+export { accountsApi, pagesApi, usersApi };

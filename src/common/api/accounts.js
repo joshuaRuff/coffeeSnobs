@@ -6,6 +6,12 @@ const getUserAccounts = (token) => {
   return axios({ url, method: 'get', headers: { Authorization: token } });
 };
 
+const getAccountInfo = (accountId, token) => {
+  const url = `${config.apiUrl}/accounts/${accountId}/info?apikey=${config.apikey}&scp=true`;
+  return axios({ url, method: 'get', headers: { Authorization: token } });
+};
+
 export default {
+  getAccountInfo,
   getUserAccounts,
 };

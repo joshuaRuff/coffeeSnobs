@@ -1,7 +1,7 @@
 import { kea } from 'kea';
 import { put } from 'redux-saga/effects';
 import PropTypes from 'prop-types';
-import { accounts, users } from 'common/api';
+import { usersApi } from 'common/api';
 
 export default kea({
 
@@ -9,7 +9,6 @@ export default kea({
 
   actions: () => ({
     forgot: username => username,
-    getAccounts: token => token,
     getProfile: token => token,
     login: params => params,
     logout: () => true,
@@ -19,8 +18,6 @@ export default kea({
     setForgot: message => message,
     setLogin: (token, expires, role) => ({ token, expires, role }),
     setProfile: params => params,
-    setSelectedAccount: accountId => accountId,
-    setAccounts: accountList => accountList,
   }),
 
   reducers: ({ actions }) => (
@@ -77,32 +74,31 @@ export default kea({
           [actions.setProfile]: (state, payload) => payload,
         },
       ],
-
-      accounts: [
-        {},
-        PropTypes.object,
-        {
-          [actions.setAccounts]: (state, payload) => payload,
-        },
-      ],
-      selectedAccount: [
-        '',
-        PropTypes.string,
-        {
-          [actions.setSelectedAccount]: (state, payload) => payload,
-        },
-      ],
     }
   ),
 
   // SELECTORS (data from reducer + more)
-  // selectors: ({ constants, selectors }) => ({}),
+  selectors: ({ selectors }) => ({
+    error: [() => [selectors.error], error => error, PropTypes.object],
+    forgot: [() => [selectors.forgot], forgot => forgot, PropTypes.object],
+    login: [() => [selectors.login], login => login, PropTypes.object],
+    profile: [() => [selectors.profile], profile => profile, PropTypes.object],
+    access: [
+      () => [selectors.profile],
+      (profile) => {
+        if (profile.controlPanel && profile.controlPanel.access) {
+          return profile.controlPanel.access;
+        }
+        return {};
+      },
+      PropTypes.object,
+    ],
+  }),
 
   // --- Sagas --- \\
 
   takeLatest: ({ actions, workers }) => ({
     [actions.forgot]: workers.forgotSubmit,
-    [actions.getAccounts]: workers.getAccounts,
     [actions.getProfile]: workers.getProfile,
     [actions.login]: workers.loginSubmit,
     [actions.logout]: workers.logout,
@@ -111,25 +107,40 @@ export default kea({
 
   workers: {
 
-    * getAccounts(action) {
-      const { setAccounts } = this.actions;
-      const token = action.payload;
+    * getProfile() {
+      const { setProfile } = this.actions;
       try {
-        const accountList = yield accounts.getUserAccounts(token);
-        yield put(setAccounts(accountList.data));
+        const login = yield this.get('login');
+        if (login.token) {
+          const profile = yield usersApi.getProfile('-uniqueAccountId_1', login.token);
+          yield put(setProfile(profile.data));
+        } else {
+          throw Error('No Token available to getProfile');
+        }
       } catch (err) {
         console.log(err);
       }
     },
 
-    * getProfile(action) {
-      const { setProfile } = this.actions;
-      const token = action.payload;
+    * forgotSubmit(action) {
+      const { setError, setForgot, setIsSubmitting } = this.actions;
+      const username = action.payload;
+
       try {
-        const profile = yield users.getProfile('-uniqueAccountId_1', token);
-        yield put(setProfile(profile.data));
+        // Restore store to defaults
+        yield put(setIsSubmitting(true));
+        yield put(setError(false, ''));
+
+        // Do call to our api users endpoint
+        const response = yield usersApi.forgot('-uniqueAccountId_1', username);
+
+        // Update store with success message
+        yield put(setIsSubmitting(false));
+        yield put(setForgot(response.data.message));
       } catch (err) {
-        console.log(err);
+        const errorMessage = err.response.data.message || err;
+        yield put(setIsSubmitting(false));
+        yield put(setError(true, errorMessage));
       }
     },
 
@@ -153,11 +164,11 @@ export default kea({
         yield put(setError(false, ''));
 
         // Do call to our api users endpoint
-        const response = yield users.login('-uniqueAccountId_1', userName, password);
+        const response = yield usersApi.login('-uniqueAccountId_1', userName, password);
         const { expires, token, profile } = response.data;
 
         // Check if user checked to remember login, if so, save it to localStorage
-        if (remember) { users.setStorage(token, expires); }
+        if (remember) { usersApi.setStorage(token, expires); }
 
         // Update store with token
         yield put(setIsSubmitting(false));
@@ -173,33 +184,11 @@ export default kea({
       }
     },
 
-    * forgotSubmit(action) {
-      const { setError, setForgot, setIsSubmitting } = this.actions;
-      const username = action.payload;
-
-      try {
-        // Restore store to defaults
-        yield put(setIsSubmitting(true));
-        yield put(setError(false, ''));
-
-        // Do call to our api users endpoint
-        const response = yield users.forgot('-uniqueAccountId_1', username);
-
-        // Update store with success message
-        yield put(setIsSubmitting(false));
-        yield put(setForgot(response.data.message));
-      } catch (err) {
-        const errorMessage = err.response.data.message || err;
-        yield put(setIsSubmitting(false));
-        yield put(setError(true, errorMessage));
-      }
-    },
-
     * logout() {
       const { setLogin } = this.actions;
 
       try {
-        users.logout();
+        usersApi.logout();
         yield put(setLogin('', '', ''));
       } catch (err) {
         console.log(err);
@@ -214,7 +203,7 @@ export default kea({
         yield put(setError(false, ''));
 
         // Do call to our api users endpoint
-        const response = yield users.register('-uniqueAccountId_1', action.payload);
+        const response = yield usersApi.register('-uniqueAccountId_1', action.payload);
         const { expires, token } = response.data;
 
         // Update store with success message

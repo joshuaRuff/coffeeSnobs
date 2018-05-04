@@ -18,7 +18,7 @@ export default class TopNav extends React.Component {
     return (
       <Header style={{ background: '#fff', padding: 0 }}>
         <CollapseSideNav target="mainSideNav" />
-        <SelectAccount defaultChoice="-uniqueAccountId_1" />
+        <SelectAccount defaultChoice="-uniqueAccountId_1" target="mainSideNav" />
         <Logout size="small" />
       </Header>
     );
