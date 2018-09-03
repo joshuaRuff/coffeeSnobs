@@ -2,7 +2,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = {
-  entry: './src/client.js',
+  entry: './client.js',
   devServer: {
     historyApiFallback: true,
   },

@@ -6,15 +6,14 @@ import { ConnectedRouter } from 'react-router-redux';
 import createHistory from 'history/createBrowserHistory';
 
 // Global Styles
-import './common/css/style.scss';
+import './src/css/style.scss';
 
 // Store it required to be imported before any components
 // including the main app
-import store from './store';
+import store from './src/store';
 
 // Include Component
-import App from './app';
-import Auth from './authentication';
+import App from './src/index.js';
 
 const history = createHistory();
 
@@ -26,7 +25,6 @@ ReactDOM.render(
   <Provider store={store}>
     <ConnectedRouter history={history}>
       <Switch>
-        <Route path="/auth" component={Auth} />
         <Route component={App} />
       </Switch>
     </ConnectedRouter>
