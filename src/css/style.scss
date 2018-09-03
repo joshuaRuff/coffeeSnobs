@@ -1,9 +1,12 @@
 // App wide styles
+
 body {
     width: 100%;
     height: 100%;
     padding: 0;
     margin: 0;
+   background-image: url('chemex.jpg');
+   background-size: 100%;
 
     .title {
         border: 1px solid gray;
