@@ -1,7 +1,0 @@
-{
-    "extends": "sardius/react",
-    "settings": {
-      'import/resolver': 'webpack',
-    },
-    "rules": {},
-}
